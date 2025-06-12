@@ -54,8 +54,6 @@ learntube-ai/
 
 Technical Workflow Architecture:
 
-## Project Architecture
-
 ```mermaid
 flowchart TB
     User["👤 User"] --> StreamlitUI["🎨 Streamlit Frontend\nPort: 8501"]
@@ -97,6 +95,7 @@ flowchart TB
     OpenRouterAPI -- API Error --> FallbackHandler
     FallbackHandler -- Graceful Degradation --> ResponseProcessor
     StreamlitUI -- Session State --> SessionCache["💾 Streamlit Session State\n- Messages History\n- Profile Data\n- UI State"]
+```
 
 
 
