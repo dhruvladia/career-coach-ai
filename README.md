@@ -52,7 +52,53 @@ learntube-ai/
 └── README.md # This file
 ```
 
-Mermaid Chart Link: https://www.mermaidchart.com/app/projects/7da26834-9da3-4879-8b0f-574f7bdbee0e/diagrams/6908ca7a-ecdd-4efc-8c5a-76d57d08386b/version/v0.1/edit
+Technical Workflow Architecture:
+
+## Project Architecture
+
+```mermaid
+flowchart TB
+    User["👤 User"] --> StreamlitUI["🎨 Streamlit Frontend\nPort: 8501"]
+    StreamlitUI -- Start Session --> StartSession["📝 Enter LinkedIn URL"]
+    StreamlitUI -- Chat Message --> ChatInput["💬 Send Message"]
+    StreamlitUI -- Quick Actions --> QuickButtons["🎯 Job Analysis\n📝 Profile Enhancement\n🛤️ Career Path"]
+    StartSession -- POST /start_session --> FastAPI["🚀 FastAPI Backend\nPort: 8000"]
+    ChatInput -- POST /chat --> FastAPI
+    QuickButtons -- POST /chat --> FastAPI
+    FastAPI -- LinkedIn URL --> ApifyService["🔗 Apify LinkedIn Scraper\nActor: 2SyF0bVxmgGr8IVCZ"]
+    ApifyService -- Profile Data --> ProfileProcessor["📊 Profile Data Processor"]
+    ProfileProcessor -- Structured Data --> FirebaseService["🔥 Firebase Service"]
+    FastAPI --> SessionManager["🗂️ Session Manager"]
+    SessionManager -- Create/Get Session --> FirebaseService
+    FastAPI -- User Query + Profile --> LangGraphOrchestrator["🧠 LangGraph Orchestrator\nMulti-Agent System"]
+    LangGraphOrchestrator --> RouterAgent["🎯 Router Agent\nQuery Analysis & Routing"]
+    RouterAgent -- Job Description --> JobFitAgent["📊 Job Fit Analyst\n- Calculate Match Score\n- Missing Skills Analysis\n- Enhancement Suggestions"]
+    RouterAgent -- Career Questions --> CareerPathAgent["🛤️ Career Path Agent\n- Career Trajectory\n- Upskilling Areas\n- Timeline Planning"]
+    RouterAgent -- Profile Updates --> ProfileUpdaterAgent["👤 Profile Updater\n- Extract New Info\n- Update User Data\n- Skill Recognition"]
+    RouterAgent -- Content Requests --> ContentAgent["📝 Content Enhancement\n- LinkedIn Optimization\n- Headline Suggestions\n- About Section"]
+    JobFitAgent -- Prompt + Context --> OpenRouterAPI["🤖 OpenRouter API\nGPT-4 Models"]
+    CareerPathAgent --> OpenRouterAPI
+    ProfileUpdaterAgent --> OpenRouterAPI
+    ContentAgent --> OpenRouterAPI
+    RouterAgent --> OpenRouterAPI
+    OpenRouterAPI -- AI Response --> ResponseProcessor["⚙️ Response Processor"]
+    ResponseProcessor -- Structured Output --> StateManager["📋 Graph State Manager"]
+    StateManager -- Update Profile --> FirebaseService
+    StateManager -- Save Chat History --> FirebaseService
+    StateManager -- Conversation State --> FirebaseService
+    StateManager -- Final Response --> FastAPI
+    FastAPI -- JSON Response --> StreamlitUI
+    FirebaseService --> UserProfiles[("👥 User Profiles\n- Name, Skills, Experience\n- LinkedIn Data\n- Session Metadata")] & ChatHistory[("💬 Chat History\n- Messages & Responses\n- Agent Types\n- Timestamps")] & ConversationState[("🧠 Conversation State\n- Graph State\n- Agent Scratchpad\n- Context Memory")]
+    ApifyService -. Scraping .-> LinkedInProfiles["🔗 LinkedIn Profiles"]
+    OpenRouterAPI -. AI Models .-> OpenAIModels["🧠 OpenAI GPT-4\nClaude, etc."]
+    ConfigManager["⚙️ Configuration Manager"] -- API Keys --> ApifyService & OpenRouterAPI
+    ConfigManager -- Credentials --> FirebaseService
+    ApifyService -- Scraping Failed --> FallbackHandler["⚠️ Fallback Handler\nManual Profile Entry"]
+    OpenRouterAPI -- API Error --> FallbackHandler
+    FallbackHandler -- Graceful Degradation --> ResponseProcessor
+    StreamlitUI -- Session State --> SessionCache["💾 Streamlit Session State\n- Messages History\n- Profile Data\n- UI State"]
+
+
 
 ## Quick Start
 
