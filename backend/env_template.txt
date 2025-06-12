@@ -1,0 +1,13 @@
+# Copy this content to backend/.env and update the API keys
+
+# API Keys
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+APIFY_API_TOKEN=your_apify_api_token_here
+
+# Firebase Configuration
+FIREBASE_PROJECT_ID=learntube-18ce5
+FIREBASE_CREDENTIALS_PATH=../learntube-18ce5-firebase-adminsdk-fbsvc-8991def342.json
+GOOGLE_APPLICATION_CREDENTIALS=../learntube-18ce5-firebase-adminsdk-fbsvc-8991def342.json
+
+# Application Configuration
+DEBUG=True 

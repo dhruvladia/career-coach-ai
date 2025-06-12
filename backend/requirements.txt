@@ -1,0 +1,15 @@
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.11.5
+pydantic-settings==2.9.1
+python-dotenv==1.0.0
+langchain==0.3.17
+langchain-openai==0.3.22
+langchain-google-genai==2.0.7
+langgraph==0.2.65
+google-cloud-firestore==2.13.1
+apify-client==1.7.1
+firebase-admin==6.4.0
+requests==2.31.0
+python-multipart==0.0.6
+tiktoken==0.9.0 
