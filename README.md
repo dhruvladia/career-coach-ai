@@ -8,7 +8,7 @@ An intelligent career coaching application that analyzes LinkedIn profiles and p
 - **Backend**: FastAPI with LangGraph multi-agent system
 - **Database**: Google Firestore
 - **AI Orchestration**: LangGraph with specialized agents
-- **LinkedIn Scraping**: Apify integration (Actor ID: 2SyF0bVxmgGr8IVCZ)
+- **LinkedIn Scraping**: Apify integration (Actor ID: 2SyF0bVxmgGr8IVCZ) (Note: The LinkedIn Apify Actor is not scraping experiences for unknown reasons.)
 
 ## Features
 
