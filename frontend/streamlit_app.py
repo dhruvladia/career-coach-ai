@@ -4,8 +4,9 @@ import json
 from typing import Dict, Any, Optional
 from datetime import datetime
 
-# Configuration
-API_BASE_URL = "http://localhost:8000"
+# Configuration - Use environment variable for production
+import os
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 # Page configuration
 st.set_page_config(

@@ -4,6 +4,8 @@ from typing import Dict, Any, Optional, List
 import uuid
 from datetime import datetime
 import json
+import os
+import base64
 
 from app.config import settings
 from app.models.schemas import UserProfile, Experience
@@ -11,10 +13,22 @@ from app.models.schemas import UserProfile, Experience
 class FirebaseService:
     def __init__(self):
         if not firebase_admin._apps:
-            if settings.firebase_credentials_path:
+            # Check for base64 encoded credentials first (for production)
+            if os.getenv("FIREBASE_CREDENTIALS_BASE64"):
+                try:
+                    cred_json = base64.b64decode(os.getenv("FIREBASE_CREDENTIALS_BASE64"))
+                    cred_dict = json.loads(cred_json)
+                    cred = credentials.Certificate(cred_dict)
+                    print("Using base64 encoded Firebase credentials")
+                except Exception as e:
+                    print(f"Error decoding base64 credentials: {e}")
+                    cred = credentials.ApplicationDefault()
+            elif settings.firebase_credentials_path:
                 cred = credentials.Certificate(settings.firebase_credentials_path)
+                print(f"Using Firebase credentials from file: {settings.firebase_credentials_path}")
             else:
                 cred = credentials.ApplicationDefault()
+                print("Using Firebase Application Default Credentials")
             
             firebase_admin.initialize_app(cred, {
                 'projectId': settings.firebase_project_id,

@@ -29,6 +29,10 @@ learntube-*.json
 .env
 *.db
 
+# Deployment artifacts
+firebase_credentials_base64.txt
+*.encoded
+
 # Node.js (for existing React frontend)
 node_modules/
 npm-debug.log*

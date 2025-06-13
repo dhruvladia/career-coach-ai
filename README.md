@@ -252,6 +252,31 @@ The application uses a sophisticated multi-agent system powered by LangGraph:
 - 📝 **Improve Profile**: Get LinkedIn optimization tips
 - 🎯 **Career Path**: Receive personalized career guidance
 
+## 🚀 Deployment
+
+### Deploy to Render (Production)
+
+The project is configured for easy deployment on Render:
+
+1. **Prepare Firebase credentials**:
+   ```bash
+   # Windows
+   python scripts/prepare_firebase_for_render.py
+   
+   # Linux/macOS
+   ./scripts/prepare_firebase_for_render.sh
+   ```
+
+2. **Deploy via render.yaml** (automated):
+   - Push your code to GitHub
+   - Connect repository to Render
+   - Deploy both services automatically
+
+3. **Or deploy manually**:
+   - Follow the detailed guide in `DEPLOYMENT.md`
+
+**📖 Full deployment guide**: See `DEPLOYMENT.md` for complete step-by-step instructions.
+
 ## Troubleshooting
 
 ### Common Issues:
@@ -268,4 +293,4 @@ The application uses a sophisticated multi-agent system powered by LangGraph:
 - **AI Models**: OpenAI GPT-4 via OpenRouter
 - **Database**: Google Firestore
 - **Scraping**: Apify LinkedIn Actor
-- **Deployment**: Containerized for easy deployment
+- **Deployment**: Ready for Render deployment with automated configuration
