@@ -2,7 +2,10 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from typing import Dict, Any
+<<<<<<< HEAD
 import json
+=======
+>>>>>>> fa29382d12c4f71e87bff507946ee59378543435
 
 from app.config import settings
 from app.agents.state import GraphState
@@ -17,6 +20,7 @@ class RouterAgent:
         )
         
         self.prompt = ChatPromptTemplate.from_messages([
+<<<<<<< HEAD
             ("system", """You are the brain of a career coaching AI system. You orchestrate the flow between specialized agents to provide comprehensive assistance.
 
 Available agents:
@@ -43,13 +47,34 @@ Respond with a JSON object containing:
 - "needs_followup": true/false - whether another agent might be needed after this one
 
 Example: {{"agent": "profile_updater", "reasoning": "User provided new skill information", "needs_followup": true}}"""),
+=======
+            ("system", """You are a routing agent for a career coaching AI system. Your job is to analyze user queries and route them to the appropriate specialized agent.
+
+Available agents:
+- profile_updater: When user provides new information about their skills, experience, or background
+- job_fit_analyst: When user wants to analyze a job description or check job fit
+- content_enhancement: When user wants help improving their LinkedIn profile content
+- career_path: When user asks for career guidance, trajectory planning, or general advice
+
+Rules:
+1. Look for keywords and context clues in the user's message
+2. Consider the chat history if relevant
+3. Choose the MOST appropriate single agent
+4. If unclear, default to 'career_path' for general career questions
+
+Respond with ONLY the agent name (one of: profile_updater, job_fit_analyst, content_enhancement, career_path)"""),
+>>>>>>> fa29382d12c4f71e87bff507946ee59378543435
             ("human", """Current user query: {user_query}
 
 Chat history context: {chat_history}
 
+<<<<<<< HEAD
 Routing context: {routing_context}
 
 Which agent should handle this next?""")
+=======
+Which agent should handle this query?""")
+>>>>>>> fa29382d12c4f71e87bff507946ee59378543435
         ])
         
         self.chain = self.prompt | self.llm | StrOutputParser()
@@ -62,6 +87,7 @@ Which agent should handle this next?""")
         if state.get("chat_history"):
             recent_history = state["chat_history"][-4:]  # Last 4 messages
         
+<<<<<<< HEAD
         # Get routing context (which agents have already been used)
         routing_context = state.get("agent_scratchpad", {}).get("routing_context", "First routing - no agents used yet")
         
@@ -107,6 +133,26 @@ Which agent should handle this next?""")
             "decision": agent_decision,
             "needs_followup": needs_followup
         })
+=======
+        # Route the query
+        decision = self.chain.invoke({
+            "user_query": state["current_user_query"],
+            "chat_history": "\n".join([f"{msg.type}: {msg.content}" for msg in recent_history])
+        })
+        
+        # Clean up the decision (remove any extra whitespace/formatting)
+        decision = decision.strip().lower()
+        
+        # Validate the decision
+        valid_agents = ["profile_updater", "job_fit_analyst", "content_enhancement", "career_path"]
+        if decision not in valid_agents:
+            decision = "career_path"  # Default fallback
+        
+        # Update state
+        state["router_decision"] = decision
+        state["agent_type"] = decision
+        state["next_agent"] = decision
+>>>>>>> fa29382d12c4f71e87bff507946ee59378543435
         
         return state
 

@@ -30,6 +30,7 @@ class GraphState(TypedDict):
     
     # Final response
     final_response: str
+<<<<<<< HEAD
     profile_updated: bool
     
     # Human interaction and interrupt fields
@@ -39,3 +40,6 @@ class GraphState(TypedDict):
     human_input_received: Optional[str]  # The actual human input received
     pending_confirmation: Optional[Dict[str, Any]]  # Data awaiting confirmation
     workflow_stage: str  # Current stage: processing, awaiting_input, confirmed, completed 
+=======
+    profile_updated: bool 
+>>>>>>> fa29382d12c4f71e87bff507946ee59378543435
