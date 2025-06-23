@@ -100,6 +100,7 @@ Which agent should handle this next?""") # <--- Keep routing_context
             state["next_agent"] = "end"  # Go to response compiler after this agent
 
         # Store routing decision in scratchpad for debugging
+        # Store routing decision in scratchpad for debugging
         if "agent_scratchpad" not in state: # Ensure scratchpad exists
             state["agent_scratchpad"] = {}
         if "routing_decisions" not in state["agent_scratchpad"]:
@@ -107,3 +108,5 @@ Which agent should handle this next?""") # <--- Keep routing_context
         state["agent_scratchpad"]["routing_decisions"].append({
             "query": state["current_user_query"],
             "decision": agent_decision,
+            "needs_followup": needs_followup
+        })
