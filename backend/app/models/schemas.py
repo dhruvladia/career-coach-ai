@@ -4,21 +4,18 @@ from datetime import datetime
 
 class LinkedInProfileRequest(BaseModel):
     linkedin_url: str
-    
+
 class ChatMessage(BaseModel):
     session_id: str
     message: str
-<<<<<<< HEAD
-    resume_from_interrupt: bool = False  # Flag to indicate resuming from human interaction
-=======
->>>>>>> fa29382d12c4f71e87bff507946ee59378543435
-    
+    resume_from_interrupt: bool = False  # <--- Keep this line
+
 class Experience(BaseModel):
     title: str
     company: str
     duration: Optional[str] = None
     description: Optional[str] = None
-    
+
 class UserProfile(BaseModel):
     session_id: str
     linkedin_url: str
@@ -29,18 +26,18 @@ class UserProfile(BaseModel):
     education: Optional[List[Dict[str, Any]]] = []
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-    
+
 class JobFitAnalysis(BaseModel):
     score: int
     summary: str
     missing_skills: List[str]
     enhancements: List[str]
-    
+
 class CareerPathResponse(BaseModel):
     analysis: str
     trajectory: str
     upskilling_areas: List[str]
-    
+
 class ChatResponse(BaseModel):
     message: str
     agent_type: str
@@ -48,14 +45,11 @@ class ChatResponse(BaseModel):
     profile_updated: bool = False
     job_fit_analysis: Optional[JobFitAnalysis] = None
     career_path: Optional[CareerPathResponse] = None
-<<<<<<< HEAD
-    requires_input: bool = False
-    input_type: Optional[str] = None
-    workflow_stage: str = "completed"
-=======
->>>>>>> fa29382d12c4f71e87bff507946ee59378543435
-    
+    requires_input: bool = False  # <--- Keep this line
+    input_type: Optional[str] = None  # <--- Keep this line
+    workflow_stage: str = "completed" # <--- Keep this line
+
 class SessionResponse(BaseModel):
     session_id: str
     message: str
-    profile_data: Optional[UserProfile] = None 
+    profile_data: Optional[UserProfile] = None
