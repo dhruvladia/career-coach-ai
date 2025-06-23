@@ -8,6 +8,10 @@ class LinkedInProfileRequest(BaseModel):
 class ChatMessage(BaseModel):
     session_id: str
     message: str
+<<<<<<< HEAD
+    resume_from_interrupt: bool = False  # Flag to indicate resuming from human interaction
+=======
+>>>>>>> fa29382d12c4f71e87bff507946ee59378543435
     
 class Experience(BaseModel):
     title: str
@@ -44,6 +48,12 @@ class ChatResponse(BaseModel):
     profile_updated: bool = False
     job_fit_analysis: Optional[JobFitAnalysis] = None
     career_path: Optional[CareerPathResponse] = None
+<<<<<<< HEAD
+    requires_input: bool = False
+    input_type: Optional[str] = None
+    workflow_stage: str = "completed"
+=======
+>>>>>>> fa29382d12c4f71e87bff507946ee59378543435
     
 class SessionResponse(BaseModel):
     session_id: str

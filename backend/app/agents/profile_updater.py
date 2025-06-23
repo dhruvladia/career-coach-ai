@@ -80,6 +80,31 @@ Extract any profile updates:""")
                         state["user_profile_data"] = updated_profile
                     
                     state["profile_updated"] = True
+<<<<<<< HEAD
+                    state["profile_updates"] = {
+                        "updates": updates,
+                        "message": self._create_update_message(updates)
+                    }
+                    
+                    # Check if user might want job recommendations after profile update
+                    if "skills" in updates:
+                        state["next_agent"] = "router"  # Let router decide if job_fit_analyst should be next
+                else:
+                    state["profile_updates"] = {
+                        "updates": {},
+                        "message": "I noted your information but couldn't update your profile right now."
+                    }
+            else:
+                # No updates detected
+                state["profile_updates"] = None
+                # Since no profile update happened, maybe user needs another agent
+                state["next_agent"] = "router"
+        
+        except Exception as e:
+            print(f"Profile updater error: {e}")
+            state["profile_updates"] = None
+            state["next_agent"] = "router"
+=======
                     state["profile_updates"] = updates
                     state["final_response"] = self._create_update_message(updates)
                 else:
@@ -91,6 +116,7 @@ Extract any profile updates:""")
         except Exception as e:
             print(f"Profile updater error: {e}")
             state["final_response"] = "I understand. How can I help you today?"
+>>>>>>> fa29382d12c4f71e87bff507946ee59378543435
         
         state["agent_type"] = "profile_updater"
         return state
