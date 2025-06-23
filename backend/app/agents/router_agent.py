@@ -2,7 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from typing import Dict, Any
-import json # <--- Keep this import
+import json
 
 from app.config import settings
 from app.agents.state import GraphState
@@ -42,14 +42,14 @@ Respond with a JSON object containing:
 - "reasoning": Brief explanation of your decision
 - "needs_followup": true/false - whether another agent might be needed after this one
 
-Example: {{"agent": "profile_updater", "reasoning": "User provided new skill information", "needs_followup": true}}"""), # <--- Keep this prompt
+Example: {{"agent": "profile_updater", "reasoning": "User provided new skill information", "needs_followup": true}}"""),
             ("human", """Current user query: {user_query}
 
 Chat history context: {chat_history}
 
 Routing context: {routing_context}
 
-Which agent should handle this next?""") # <--- Keep routing_context
+Which agent should handle this next?""")
         ])
 
         self.chain = self.prompt | self.llm | StrOutputParser()
@@ -60,7 +60,7 @@ Which agent should handle this next?""") # <--- Keep routing_context
         # Get recent chat history for context
         recent_history = []
         if state.get("chat_history"):
-            recent_history = state["chat_history"][-4:]  # Last 4 messages
+            recent_history = state["chat_history"][-4:] # Last 4 messages
 
         # Get routing context (which agents have already been used)
         routing_context = state.get("agent_scratchpad", {}).get("routing_context", "First routing - no agents used yet")
@@ -87,7 +87,7 @@ Which agent should handle this next?""") # <--- Keep routing_context
         # Validate the decision
         valid_agents = ["profile_updater", "job_fit_analyst", "content_enhancement", "career_path", "end"]
         if agent_decision not in valid_agents:
-            agent_decision = "career_path"  # Default fallback
+            agent_decision = "career_path" # Default fallback
 
         # Update state
         state["router_decision"] = agent_decision
@@ -95,11 +95,10 @@ Which agent should handle this next?""") # <--- Keep routing_context
 
         # Set next_agent based on whether followup is needed
         if needs_followup and agent_decision != "end":
-            state["next_agent"] = "router"  # Come back to router after this agent
+            state["next_agent"] = "router" # Come back to router after this agent
         else:
-            state["next_agent"] = "end"  # Go to response compiler after this agent
+            state["next_agent"] = "end" # Go to response compiler after this agent
 
-        # Store routing decision in scratchpad for debugging
         # Store routing decision in scratchpad for debugging
         if "agent_scratchpad" not in state: # Ensure scratchpad exists
             state["agent_scratchpad"] = {}
@@ -110,3 +109,8 @@ Which agent should handle this next?""") # <--- Keep routing_context
             "decision": agent_decision,
             "needs_followup": needs_followup
         })
+        return state # Ensure state is returned
+
+
+# Instantiate the RouterAgent class to make it importable
+router_agent = RouterAgent()
