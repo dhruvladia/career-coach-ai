@@ -1,0 +1,32 @@
+services:
+  # Backend API Service
+  - type: web
+    name: learntube-backend
+    env: python
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: APIFY_API_TOKEN
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        value: learntube-18ce5
+      - key: FIREBASE_CREDENTIALS_BASE64
+        sync: false
+      - key: DEBUG
+        value: false
+      - key: PORT
+        value: 10000
+
+  # Frontend Streamlit Service  
+  - type: web
+    name: learntube-frontend
+    env: python
+    buildCommand: "cd frontend && pip install -r requirements.txt"
+    startCommand: "cd frontend && streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0 --server.enableCORS=false --server.enableXsrfProtection=false"
+    envVars:
+      - key: API_BASE_URL
+        value: https://learntube-backend.onrender.com
+      - key: PORT
+        value: 10000 
