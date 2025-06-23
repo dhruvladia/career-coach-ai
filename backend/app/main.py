@@ -6,15 +6,15 @@ from typing import Dict, Any
 
 from app.config import settings
 from app.models.schemas import (
-    LinkedInProfileRequest, 
-    ChatMessage, 
-    ChatResponse, 
+    LinkedInProfileRequest,
+    ChatMessage,
+    ChatResponse,
     SessionResponse,
     UserProfile
 )
 from app.services.firebase_service import firebase_service
 from app.services.linkedin_scraper import linkedin_scraper
-from app.agents.langgraph_orchestrator import orchestrator
+from app.agents.langgraph_orchestrator import orchestrator # Ensure this import is correct
 
 # Create FastAPI app
 app = FastAPI(
@@ -48,22 +48,22 @@ async def start_session(request: LinkedInProfileRequest):
     """
     try:
         linkedin_url = request.linkedin_url.strip()
-        
+
         # Validate LinkedIn URL
         if not linkedin_url or "linkedin.com" not in linkedin_url:
             raise HTTPException(
-                status_code=400, 
+                status_code=400,
                 detail="Please provide a valid LinkedIn profile URL"
             )
-        
+
         # Scrape LinkedIn profile
         print(f"Scraping LinkedIn profile: {linkedin_url}")
         profile_data = linkedin_scraper.scrape_profile(linkedin_url)
-        
+
         if not profile_data:
             # Create session without scraped data - allow manual profile building
             session_id = firebase_service.create_user_session(linkedin_url)
-            
+
             return SessionResponse(
                 session_id=session_id,
                 message="""Welcome to your AI Career Coach! 🚀
@@ -85,17 +85,17 @@ You can also manually share your background information with me, and I'll update
 What would you like to work on today?""",
                 profile_data=None
             )
-        
+
         # Create session with scraped profile data
         session_id = firebase_service.create_user_session(linkedin_url, profile_data)
-        
+
         # Create welcome message based on profile
         welcome_message = f"""Welcome to your AI Career Coach, {profile_data.get('name', 'there')}! 🚀
 
 I've analyzed your LinkedIn profile and I'm ready to help you with:
 
 ✅ **Job Fit Analysis** - Paste any job description for detailed compatibility analysis
-✅ **Career Path Guidance** - Get personalized advice for your career goals  
+✅ **Career Path Guidance** - Get personalized advice for your career goals
 ✅ **Profile Enhancement** - Improve your LinkedIn content for better visibility
 ✅ **Skills Development** - Identify key areas for growth
 
@@ -111,7 +111,7 @@ I've analyzed your LinkedIn profile and I'm ready to help you with:
 - "I also know [skill name]" (to update your profile)
 
 What would you like to work on today?"""
-        
+
         # Convert to UserProfile format for response
         user_profile = UserProfile(
             session_id=session_id,
@@ -127,13 +127,13 @@ What would you like to work on today?"""
             } for exp in profile_data.get('experience', [])],
             education=profile_data.get('education', [])
         )
-        
+
         return SessionResponse(
             session_id=session_id,
             message=welcome_message,
             profile_data=user_profile
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -151,13 +151,13 @@ async def chat(request: ChatMessage):
     try:
         session_id = request.session_id.strip()
         message = request.message.strip()
-        
+
         if not session_id or not message:
             raise HTTPException(
                 status_code=400,
                 detail="Session ID and message are required"
             )
-        
+
         # Get user profile
         user_profile = firebase_service.get_user_profile(session_id)
         if not user_profile:
@@ -165,24 +165,36 @@ async def chat(request: ChatMessage):
                 status_code=404,
                 detail="Session not found. Please start a new session."
             )
-        
+
+        # **** IMPORTANT: Orchestrator invocation was missing. Adding it here. ****
+        # This is where the LangGraph workflow is initiated and 'result' is populated.
+        result = await orchestrator.invoke(
+            {
+                "current_user_query": message,
+                "user_profile_data": user_profile,
+                "session_id": session_id,
+                "chat_history": firebase_service.get_chat_history_messages(session_id),
+                "resume_from_interrupt": request.resume_from_interrupt # Pass the new flag from ChatMessage
+            }
+        )
+
         return ChatResponse(
             message=result["message"],
             agent_type=result["agent_type"],
             session_id=session_id,
-
+            # KEEP this block of arguments, as it includes the new fields and uses .get()
             profile_updated=result.get("profile_updated", False),
             job_fit_analysis=result.get("job_fit_analysis"),
             career_path=result.get("career_path"),
             requires_input=result.get("requires_input", False),
             input_type=result.get("input_type"),
             workflow_stage=result.get("workflow_stage", "completed")
-
-            profile_updated=result["profile_updated"],
-            job_fit_analysis=result["job_fit_analysis"],
-            career_path=result["career_path"]
+            # REMOVE the following lines which were causing the SyntaxError due to duplication:
+            # profile_updated=result["profile_updated"],
+            # job_fit_analysis=result["job_fit_analysis"],
+            # career_path=result["career_path"]
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -204,9 +216,9 @@ async def get_profile(session_id: str):
                 status_code=404,
                 detail="Profile not found"
             )
-        
+
         return profile
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -224,7 +236,7 @@ async def get_chat_history(session_id: str, limit: int = 10):
     try:
         history = firebase_service.get_chat_history(session_id, limit)
         return {"chat_history": history}
-        
+
     except Exception as e:
         print(f"Error getting chat history: {e}")
         raise HTTPException(
@@ -250,4 +262,4 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=port,
         reload=settings.debug
-    ) 
+    )
