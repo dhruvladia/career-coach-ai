@@ -168,33 +168,24 @@ async def chat(request: ChatMessage):
 
         # **** IMPORTANT: Orchestrator invocation was missing. Adding it here. ****
         # This is where the LangGraph workflow is initiated and 'result' is populated.
-        result = await orchestrator.invoke(
-            {
-                "current_user_query": message,
-                "user_profile_data": user_profile,
-                "session_id": session_id,
-                "chat_history": firebase_service.get_chat_history_messages(session_id),
-                "resume_from_interrupt": request.resume_from_interrupt # Pass the new flag from ChatMessage
-            }
+        result = orchestrator.process_message(
+            session_id=session_id,
+            user_message=message,
+            user_profile=user_profile,
+            resume_from_interrupt=request.dict().get("resume_from_interrupt", False)
         )
-
+        
         return ChatResponse(
             message=result["message"],
             agent_type=result["agent_type"],
             session_id=session_id,
-            # KEEP this block of arguments, as it includes the new fields and uses .get()
             profile_updated=result.get("profile_updated", False),
             job_fit_analysis=result.get("job_fit_analysis"),
             career_path=result.get("career_path"),
             requires_input=result.get("requires_input", False),
             input_type=result.get("input_type"),
             workflow_stage=result.get("workflow_stage", "completed")
-            # REMOVE the following lines which were causing the SyntaxError due to duplication:
-            # profile_updated=result["profile_updated"],
-            # job_fit_analysis=result["job_fit_analysis"],
-            # career_path=result["career_path"]
         )
-
     except HTTPException:
         raise
     except Exception as e:
