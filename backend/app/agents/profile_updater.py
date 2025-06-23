@@ -21,9 +21,9 @@ class ProfileUpdater:
             model="openai/gpt-4o-mini",
             temperature=0.1
         )
-        
+
         self.parser = JsonOutputParser(pydantic_object=ProfileUpdate)
-        
+
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", """You are a profile update detector. Analyze user messages to identify new skills or experience they mention.
 
@@ -49,16 +49,16 @@ User message:
 
 Extract any profile updates:""")
         ])
-        
+
         self.chain = self.prompt | self.llm | self.parser
-    
+
     def update_profile(self, state: GraphState) -> GraphState:
         """Detect and apply profile updates from user message"""
-        
+
         current_profile = state["user_profile_data"]
         user_message = state["current_user_query"]
         session_id = state["session_id"]
-        
+
         try:
             # Check for profile updates
             result = self.chain.invoke({
@@ -66,26 +66,25 @@ Extract any profile updates:""")
                 "user_message": user_message,
                 "format_instructions": self.parser.get_format_instructions()
             })
-            
+
             if result.get("has_updates", False):
                 updates = result.get("updates", {})
-                
+
                 # Apply updates
                 success = self._apply_updates(session_id, current_profile, updates)
-                
+
                 if success:
                     # Refresh profile data
                     updated_profile = firebase_service.get_user_profile(session_id)
                     if updated_profile:
                         state["user_profile_data"] = updated_profile
-                    
+
                     state["profile_updated"] = True
-<<<<<<< HEAD
                     state["profile_updates"] = {
                         "updates": updates,
                         "message": self._create_update_message(updates)
                     }
-                    
+
                     # Check if user might want job recommendations after profile update
                     if "skills" in updates:
                         state["next_agent"] = "router"  # Let router decide if job_fit_analyst should be next
@@ -99,40 +98,27 @@ Extract any profile updates:""")
                 state["profile_updates"] = None
                 # Since no profile update happened, maybe user needs another agent
                 state["next_agent"] = "router"
-        
+
         except Exception as e:
             print(f"Profile updater error: {e}")
             state["profile_updates"] = None
-            state["next_agent"] = "router"
-=======
-                    state["profile_updates"] = updates
-                    state["final_response"] = self._create_update_message(updates)
-                else:
-                    state["final_response"] = "I noted your information but couldn't update your profile right now."
-            else:
-                # No updates, continue with regular response
-                state["final_response"] = "Thanks for that information! What would you like to know about your career?"
-        
-        except Exception as e:
-            print(f"Profile updater error: {e}")
-            state["final_response"] = "I understand. How can I help you today?"
->>>>>>> fa29382d12c4f71e87bff507946ee59378543435
-        
+            state["next_agent"] = "router" # Fallback to router in case of error
+
         state["agent_type"] = "profile_updater"
         return state
-    
+
     def _apply_updates(self, session_id: str, current_profile: Dict[str, Any], updates: Dict[str, Any]) -> bool:
         """Apply updates to the user profile"""
         try:
             final_updates = {}
-            
+
             for field, value in updates.items():
                 if field == "skills":
                     current_skills = set(current_profile.get("skills", []))
                     new_skills = value if isinstance(value, list) else [value]
                     current_skills.update(new_skills)
                     final_updates["skills"] = list(current_skills)
-                
+
                 elif field == "experience":
                     current_exp = current_profile.get("experience", [])
                     if isinstance(value, list):
@@ -140,34 +126,34 @@ Extract any profile updates:""")
                     else:
                         current_exp.append(value)
                     final_updates["experience"] = current_exp
-                
+
                 else:
                     final_updates[field] = value
-            
+
             return firebase_service.update_user_profile(session_id, final_updates)
-        
+
         except Exception as e:
             print(f"Error applying updates: {e}")
             return False
-    
+
     def _create_update_message(self, updates: Dict[str, Any]) -> str:
         """Create confirmation message for updates"""
         parts = ["✅ **Profile Updated!**\n"]
-        
+
         if "skills" in updates:
             skills = updates["skills"]
             skill_list = ", ".join(skills[-3:]) if isinstance(skills, list) else skills
             parts.append(f"• Added skills: {skill_list}")
-        
+
         if "experience" in updates:
             parts.append("• Updated work experience")
-        
+
         if "about" in updates:
             parts.append("• Updated professional summary")
-        
+
         parts.append("\nYour profile is now more complete! This helps me provide better career guidance.")
-        
+
         return "\n".join(parts)
 
 # Create agent instance
-profile_updater = ProfileUpdater() 
+profile_updater = ProfileUpdater()
