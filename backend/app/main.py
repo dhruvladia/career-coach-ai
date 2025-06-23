@@ -166,38 +166,21 @@ async def chat(request: ChatMessage):
                 detail="Session not found. Please start a new session."
             )
         
-<<<<<<< HEAD
-        # Check if this is a resume from interrupt
-        resume_from_interrupt = request.dict().get("resume_from_interrupt", False)
-        
-        # Process message through LangGraph orchestrator
-        result = orchestrator.process_message(
-            session_id=session_id,
-            user_message=message,
-            user_profile=user_profile,
-            resume_from_interrupt=resume_from_interrupt
-        )
-=======
-        # Process message through LangGraph orchestrator
-        result = orchestrator.process_message(session_id, message, user_profile)
->>>>>>> fa29382d12c4f71e87bff507946ee59378543435
-        
         return ChatResponse(
             message=result["message"],
             agent_type=result["agent_type"],
             session_id=session_id,
-<<<<<<< HEAD
+
             profile_updated=result.get("profile_updated", False),
             job_fit_analysis=result.get("job_fit_analysis"),
             career_path=result.get("career_path"),
             requires_input=result.get("requires_input", False),
             input_type=result.get("input_type"),
             workflow_stage=result.get("workflow_stage", "completed")
-=======
+
             profile_updated=result["profile_updated"],
             job_fit_analysis=result["job_fit_analysis"],
             career_path=result["career_path"]
->>>>>>> fa29382d12c4f71e87bff507946ee59378543435
         )
         
     except HTTPException:
