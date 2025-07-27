@@ -1,6 +1,6 @@
-# LearnTube AI Career Coach - Streamlit Frontend
+# AI Career Coach - Streamlit Frontend
 
-This is a Streamlit-based chatbot interface for the LearnTube AI Career Coach application.
+This is a Streamlit-based chatbot interface for the AI Career Coach application.
 
 ## Features
 

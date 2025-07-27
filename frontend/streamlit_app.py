@@ -10,7 +10,7 @@ API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 # Page configuration
 st.set_page_config(
-    page_title="LearnTube AI Career Coach",
+    page_title="AI Career Coach",
     page_icon="🚀",
     layout="centered",
     initial_sidebar_state="expanded"
@@ -163,7 +163,7 @@ def display_profile_summary():
                     st.write("---")
 
 # Main app
-st.title("🚀 LearnTube AI Career Coach")
+st.title("🚀 AI Career Coach")
 
 # Sidebar
 st.sidebar.title("Career Coaching Session")
@@ -281,6 +281,6 @@ else:
 # Footer
 st.markdown("---")
 st.markdown(
-    "<div style='text-align: center; color: #666;'>Powered by LearnTube AI | Your Personal Career Coach 🚀</div>",
+    "<div style='text-align: center; color: #666;'>Powered by AI | Your Personal Career Coach 🚀</div>",
     unsafe_allow_html=True
 ) 

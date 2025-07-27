@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     google_application_credentials: str = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
     
     # Application Configuration
-    app_title: str = "LearnTube AI Career Coach"
+    app_title: str = "AI Career Coach"
     app_version: str = "1.0.0"
     debug: bool = os.getenv("DEBUG", "False").lower() == "true"
     
@@ -26,7 +26,7 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000", 
         "http://localhost:8501", 
         "http://127.0.0.1:8501",
-        "https://learntube-frontend.onrender.com",  # Production frontend URL
+        #"https://learntube-frontend.onrender.com",  # Production frontend URL
         "https://*.onrender.com"  # Allow all Render subdomains
     ]
     

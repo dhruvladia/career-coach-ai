@@ -36,7 +36,7 @@ app.add_middleware(
 async def root():
     """Health check endpoint"""
     return {
-        "message": "LearnTube AI Career Coach API",
+        "message": "AI Career Coach API",
         "version": settings.app_version,
         "status": "running"
     }
