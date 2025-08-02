@@ -1,4 +1,4 @@
-# LearnTube AI Career Coach
+#  AI Career Coach
 
 An intelligent career coaching application that analyzes LinkedIn profiles and provides personalized career guidance through AI-powered agents.
 
